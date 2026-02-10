@@ -21,16 +21,15 @@ func (h *Home) Data() any {
 	}
 }
 
-// New creates a new Home controller and registers routes.
-func New(e *echo.Echo) *Home {
+// Register registers home routes.
+func Register(e *echo.Echo) {
 	h := &Home{}
 
-	// Parse home-specific template (full page, no shared templates)
+	// Parse shared head + home template
 	h.tmpl = template.Must(template.ParseFiles(
+		"web/templates/head.html",
 		"app/home/templates/index.html",
 	))
 
 	e.GET("/", h.Index)
-
-	return h
 }

@@ -8,20 +8,19 @@ import (
 	"webapp/internal/sse"
 )
 
-// New creates a new Todo controller and registers routes.
-func New(e *echo.Echo) *Todo {
+// Register registers todo routes.
+func Register(e *echo.Echo) {
 	t := &Todo{
 		items: []Item{},
 	}
 
-	// Parse feature template (contains both "index" and "app" blocks)
+	// Parse shared head + feature template (contains "index" and "app" blocks)
 	t.tmpl = template.Must(template.ParseFiles(
+		"web/templates/head.html",
 		"app/todo/templates/index.html",
 	))
 
 	e.GET("/todo", t.Index)
 	e.POST("/todo", t.Create)
 	e.GET("/todo/sse", sse.Handler(t.tmpl, "app", t.Data))
-
-	return t
 }

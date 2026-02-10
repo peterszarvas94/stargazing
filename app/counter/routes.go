@@ -8,18 +8,17 @@ import (
 	"webapp/internal/sse"
 )
 
-// New creates a new Counter controller and registers routes.
-func New(e *echo.Echo) *Counter {
+// Register registers counter routes.
+func Register(e *echo.Echo) {
 	ctr := &Counter{}
 
-	// Parse feature template (contains both "index" and "app" blocks)
+	// Parse shared head + feature template (contains "index" and "app" blocks)
 	ctr.tmpl = template.Must(template.ParseFiles(
+		"web/templates/head.html",
 		"app/counter/templates/index.html",
 	))
 
 	e.GET("/counter", ctr.Index)
 	e.PATCH("/counter", ctr.Update)
 	e.GET("/counter/sse", sse.Handler(ctr.tmpl, "app", ctr.Data))
-
-	return ctr
 }

@@ -68,10 +68,10 @@ func main() {
 	// Routes
 	e.Static("/static", "web/static")
 
-	health.New(e)
-	home.New(e)
-	counter.New(e)
-	todo.New(e)
+	health.Register(e)
+	home.Register(e)
+	counter.Register(e)
+	todo.Register(e)
 
 	// Graceful shutdown
 	go func() {

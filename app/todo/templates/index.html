@@ -1,18 +1,7 @@
 {{define "index"}}
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{{.Title}}</title>
-    <script type="importmap">
-      {
-        "imports": {
-          "datastar": "/static/js/vendor/datastar.js"
-        }
-      }
-    </script>
-    <script type="module" src="/static/js/main.js"></script>
-  </head>
+  {{template "head" .}}
   <body>
     <div data-init="@get('/todo/sse')"></div>
     {{block "app" .}}

@@ -2,11 +2,8 @@ package health
 
 import "github.com/labstack/echo/v4"
 
-// New creates a new Health controller and registers routes.
-func New(e *echo.Echo) *Health {
+// Register registers health routes.
+func Register(e *echo.Echo) {
 	h := &Health{}
-
 	e.GET("/health", h.Check)
-
-	return h
 }
