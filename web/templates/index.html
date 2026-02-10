@@ -3,39 +3,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Todo List</title>
-    <script type="importmap">
-      {
-        "imports": {
-          "datastar": "/static/js/vendor/datastar.js"
-        }
-      }
-    </script>
-    <script type="module" src="/static/js/main.js"></script>
+    <title>Stargazing</title>
   </head>
   <body>
-    <div data-init="@get('/sse')"></div>
-    {{block "app" .}}
-    <div id="app">
-      <h1>Todo List</h1>
-
-      <form data-on:submit="@post('/todo'); el.reset()">
-        <input
-          type="text"
-          name="todo"
-          data-bind="todo"
-          placeholder="New todo..."
-        />
-        <button type="submit">Add</button>
-      </form>
-
-      <ul>
-        {{range .}}
-        <li>{{.Text}}</li>
-        {{end}}
-      </ul>
-    </div>
-    {{end}}
+    <h1>Stargazing</h1>
+    <p>Datastar + Go examples</p>
+    <ul>
+      <li><a href="/todo">Todo List</a></li>
+    </ul>
   </body>
 </html>
 {{end}}

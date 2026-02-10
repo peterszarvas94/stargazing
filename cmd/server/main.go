@@ -75,6 +75,8 @@ func main() {
 	e.GET("/sse", handlers.SSE)
 	e.GET("/health", handlers.Health)
 
+	// Examples
+	e.GET("/todo", examples.TodoPage)
 	e.POST("/todo", examples.AddTodo)
 
 	// Graceful shutdown

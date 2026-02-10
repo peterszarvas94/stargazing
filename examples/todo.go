@@ -1,12 +1,24 @@
 package examples
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/starfederation/datastar-go/datastar"
 
 	appmw "webapp/internal/middleware"
 	"webapp/internal/utils"
 )
+
+func TodoPage(c echo.Context) error {
+	clientID := utils.EnsureClientID(c)
+
+	log := appmw.Logger(c)
+	data := utils.Store.GetTodos()
+
+	log.Debug("todo: rendering", "client_id", clientID, "todo_count", len(data))
+	return c.Render(http.StatusOK, "todo", data)
+}
 
 type AddTodoSignals struct {
 	Todo string `json:"todo"`
