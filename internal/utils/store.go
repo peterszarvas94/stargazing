@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net/http"
@@ -39,13 +38,4 @@ func GetClientID(c echo.Context) (string, error) {
 		return "", errors.New("no client_id cookie")
 	}
 	return cookie.Value, nil
-}
-
-// RenderToString renders a template to a string.
-func RenderToString(c echo.Context, name string, data any) (string, error) {
-	var buf bytes.Buffer
-	if err := c.Echo().Renderer.Render(&buf, name, data, c); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
 }

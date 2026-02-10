@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"html/template"
-	"io"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -15,6 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"webapp/app/counter"
 	"webapp/app/health"
 	"webapp/app/home"
 	"webapp/app/todo"
@@ -66,14 +65,12 @@ func main() {
 		},
 	}))
 
-	tmpl := template.Must(template.ParseGlob("web/templates/*.html"))
-	e.Renderer = &TemplateRenderer{templates: tmpl}
-
 	// Routes
 	e.Static("/static", "web/static")
 
 	health.New(e)
 	home.New(e)
+	counter.New(e)
 	todo.New(e)
 
 	// Graceful shutdown
@@ -100,12 +97,4 @@ func main() {
 		slog.Error("server forced to shutdown", "err", err)
 	}
 	slog.Info("server exited")
-}
-
-type TemplateRenderer struct {
-	templates *template.Template
-}
-
-func (t *TemplateRenderer) Render(w io.Writer, name string, data any, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
 }

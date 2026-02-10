@@ -1,18 +1,26 @@
 package todo
 
-import "sync"
+import (
+	"sync"
 
-// Item represents a todo item.
+	"html/template"
+)
+
 type Item struct {
 	ID   int
 	Text string
 	Done bool
 }
 
-// Todo manages todo items and handles HTTP requests.
+type TodoData struct {
+	Title string
+	Items []Item
+}
+
 type Todo struct {
 	mu    sync.RWMutex
 	items []Item
+	tmpl  *template.Template
 }
 
 // Add creates a new todo and returns the total count.
@@ -34,4 +42,12 @@ func (t *Todo) All() []Item {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	return append([]Item(nil), t.items...)
+}
+
+// Data returns data for rendering.
+func (t *Todo) Data() any {
+	return TodoData{
+		Title: "Todo List",
+		Items: t.All(),
+	}
 }

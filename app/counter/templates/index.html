@@ -1,0 +1,31 @@
+{{define "index"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{.Title}}</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "datastar": "/static/js/vendor/datastar.js"
+        }
+      }
+    </script>
+    <script type="module" src="/static/js/main.js"></script>
+  </head>
+  <body>
+    <div data-signals:dir="0" data-init="@get('/counter/sse')"></div>
+    {{block "app" .}}
+    <div id="app">
+      <h1>{{.Title}}</h1>
+      <p><a href="/">&larr; Home</a></p>
+
+      <p>Count: <strong>{{.Value}}</strong></p>
+
+      <button data-on:click="$dir = -1; @patch('/counter')">-</button>
+      <button data-on:click="$dir = 1; @patch('/counter')">+</button>
+    </div>
+    {{end}}
+  </body>
+</html>
+{{end}}

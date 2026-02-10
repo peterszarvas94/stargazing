@@ -1,12 +1,8 @@
 package home
 
-import (
-	"net/http"
-
-	"github.com/labstack/echo/v4"
-)
+import "github.com/labstack/echo/v4"
 
 // Index renders the home page with links to examples.
 func (h *Home) Index(c echo.Context) error {
-	return c.Render(http.StatusOK, "index", nil)
+	return h.tmpl.ExecuteTemplate(c.Response().Writer, "index", h.Data())
 }

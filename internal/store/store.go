@@ -72,6 +72,20 @@ func (s *Store) SignalClient(id string) error {
 	}
 }
 
+// SignalAll signals all connected clients to update.
+func (s *Store) SignalAll() {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	for _, client := range s.clients {
+		select {
+		case client.Signals <- struct{}{}:
+		default:
+			// Signal channel full, client will get next update
+		}
+	}
+}
+
 // Close closes all client signal channels to trigger graceful disconnection
 func (s *Store) Close() {
 	s.mu.Lock()
