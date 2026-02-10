@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -28,4 +30,22 @@ func EnsureClientID(c echo.Context) string {
 		MaxAge:   86400,
 	})
 	return clientID
+}
+
+// GetClientID returns the client ID from the cookie or an error if not set.
+func GetClientID(c echo.Context) (string, error) {
+	cookie, err := c.Cookie("client_id")
+	if err != nil {
+		return "", errors.New("no client_id cookie")
+	}
+	return cookie.Value, nil
+}
+
+// RenderToString renders a template to a string.
+func RenderToString(c echo.Context, name string, data any) (string, error) {
+	var buf bytes.Buffer
+	if err := c.Echo().Renderer.Render(&buf, name, data, c); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }

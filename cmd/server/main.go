@@ -15,9 +15,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"webapp/examples"
+	"webapp/app/health"
+	"webapp/app/home"
+	"webapp/app/todo"
 	"webapp/internal/config"
-	"webapp/internal/handlers"
 	"webapp/internal/logger"
 	appmw "webapp/internal/middleware"
 	"webapp/internal/store"
@@ -71,13 +72,9 @@ func main() {
 	// Routes
 	e.Static("/static", "web/static")
 
-	e.GET("/", handlers.Index)
-	e.GET("/sse", handlers.SSE)
-	e.GET("/health", handlers.Health)
-
-	// Examples
-	e.GET("/todo", examples.TodoPage)
-	e.POST("/todo", examples.AddTodo)
+	health.New(e)
+	home.New(e)
+	todo.New(e)
 
 	// Graceful shutdown
 	go func() {

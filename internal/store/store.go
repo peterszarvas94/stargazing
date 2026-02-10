@@ -7,12 +7,6 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-type Todo struct {
-	ID   int
-	Text string
-	Done bool
-}
-
 type Client struct {
 	ID      string
 	SSE     *datastar.ServerSentEventGenerator
@@ -21,36 +15,13 @@ type Client struct {
 
 type Store struct {
 	mu      sync.RWMutex
-	todos   []Todo
 	clients map[string]*Client
 }
 
 func New() *Store {
 	return &Store{
-		todos:   []Todo{},
 		clients: make(map[string]*Client),
 	}
-}
-
-// Todos
-
-func (s *Store) AddTodo(text string) int {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	todo := Todo{
-		ID:   len(s.todos) + 1,
-		Text: text,
-		Done: false,
-	}
-	s.todos = append(s.todos, todo)
-	return len(s.todos)
-}
-
-func (s *Store) GetTodos() []Todo {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return append([]Todo(nil), s.todos...)
 }
 
 // Clients
