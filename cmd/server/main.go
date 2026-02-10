@@ -54,6 +54,7 @@ func main() {
 	e.HideBanner = true
 	e.HidePort = true
 
+	e.Use(appmw.Compression())
 	e.Use(appmw.RequestID())
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogStatus: true,
