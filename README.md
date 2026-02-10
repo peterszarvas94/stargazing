@@ -31,13 +31,16 @@ Open http://localhost:8080
 cmd/server/         # Application entrypoint
 internal/
   config/           # Environment configuration
-  handlers/         # HTTP handlers
-  logging/          # Colored slog handler
+  handlers/         # HTTP handlers (index, sse, health)
+  logger/           # Colored slog handler + JSON file logging
   middleware/       # Request ID middleware
-  store/            # In-memory data store
+  store/            # In-memory data store with client management
+  utils/            # Shared state (store instance)
 web/
   static/js/        # JavaScript (Datastar vendored)
   templates/        # Go HTML templates
+examples/
+  todo.go           # Example todo handler
 ```
 
 ## Configuration
@@ -78,7 +81,7 @@ docker run -p 8080:8080 stargazing
 
 1. Browser loads page, connects to `/sse` endpoint
 2. SSE connection stays open, receives HTML patches
-3. User actions trigger POST requests (e.g., `/add`)
+3. User actions trigger POST requests (e.g., `/todo`)
 4. POST handler updates state, signals SSE to push update
 5. Datastar morphs the DOM with new HTML
 
