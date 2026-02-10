@@ -73,7 +73,7 @@ func (h *ColoredHandler) Handle(_ context.Context, r slog.Record) error {
 		return true
 	})
 
-	fmt.Fprintf(h.w, "%s %s %s%s\n", ts, levelStr, msg, attrs.String())
+	_, _ = fmt.Fprintf(h.w, "%s %s %s%s\n", ts, levelStr, msg, attrs.String())
 	return nil
 }
 
@@ -92,7 +92,7 @@ func writeAttr(b *strings.Builder, group string, a slog.Attr) {
 	b.WriteString(key)
 	b.WriteString(reset)
 	b.WriteString("=")
-	b.WriteString(fmt.Sprintf("%v", a.Value.Any()))
+	_, _ = fmt.Fprintf(b, "%v", a.Value.Any())
 }
 
 func (h *ColoredHandler) WithAttrs(attrs []slog.Attr) slog.Handler {

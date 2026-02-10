@@ -36,9 +36,9 @@ lint:
 check: fmt vet test
 
 # Docker build
-docker:
+docker-build:
 	docker build -t stargazing .
 
 # Docker run
-docker-run: docker
+docker-run:docker-build
 	docker run -p 8080:8080 stargazing

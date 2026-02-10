@@ -37,7 +37,11 @@ func main() {
 		slog.Error("failed to open log file", "err", err)
 		os.Exit(1)
 	}
-	defer logFile.Close()
+	defer func() {
+		if err := logFile.Close(); err != nil {
+			slog.Error("failed to close log file", "err", err)
+		}
+	}()
 
 	// Setup logger
 	log := logger.New(logFile, cfg.LogLevel)

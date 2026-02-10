@@ -31,12 +31,15 @@ func SSE(c echo.Context) error {
 	var buf bytes.Buffer
 	data := utils.Store.GetTodos()
 
-	if err := c.Echo().Renderer.Render(&buf, "body", data, c); err != nil {
+	if err := c.Echo().Renderer.Render(&buf, "app", data, c); err != nil {
 		log.Error("sse: template error", "err", err)
 		return c.NoContent(500)
 	}
-	sse.PatchElements(buf.String())
-	log.Debug("sse: initial body sent", "todo_count", len(data))
+	if err := sse.PatchElements(buf.String()); err != nil {
+		log.Error("sse: initial patch error", "err", err)
+		return c.NoContent(500)
+	}
+	log.Debug("sse: initial app sent", "todo_count", len(data))
 
 	// Cleanup on disconnect
 	defer func() {
@@ -59,7 +62,7 @@ func SSE(c echo.Context) error {
 			var buf bytes.Buffer
 			data := utils.Store.GetTodos()
 
-			if err := c.Echo().Renderer.Render(&buf, "body", data, c); err != nil {
+			if err := c.Echo().Renderer.Render(&buf, "app", data, c); err != nil {
 				log.Error("sse: template error", "err", err)
 				continue
 			}

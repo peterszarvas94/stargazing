@@ -33,6 +33,6 @@ func Index(c echo.Context) error {
 	log := appmw.Logger(c)
 	data := utils.Store.GetTodos()
 
-	log.Debug("index: rendering", "todo_count", len(data), "new_client", isNew)
+	log.Debug("index: rendering", "client_id", clientID, "todo_count", len(data), "new_client", isNew)
 	return c.Render(http.StatusOK, "index", data)
 }
