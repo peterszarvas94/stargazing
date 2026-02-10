@@ -100,3 +100,14 @@ func (s *Store) SignalClient(id string) error {
 		return errors.New("signal channel full")
 	}
 }
+
+// Close closes all client signal channels to trigger graceful disconnection
+func (s *Store) Close() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for _, client := range s.clients {
+		close(client.Signals)
+	}
+	s.clients = make(map[string]*Client)
+}

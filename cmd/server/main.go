@@ -85,6 +85,10 @@ func main() {
 	<-quit
 
 	slog.Info("shutting down server...")
+
+	// Close all SSE client connections first
+	utils.Store.Close()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
