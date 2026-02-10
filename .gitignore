@@ -5,9 +5,10 @@
 *.dylib
 *.test
 *.out
-vendor/
+./vendor/
 dist/
 tmp/
+logs/
 *.log
 .DS_Store
 .idea/

@@ -1,34 +1,103 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"html/template"
 	"io"
-	"log"
+	"log/slog"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"syscall"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"webapp/examples"
+	"webapp/internal/config"
 	"webapp/internal/handlers"
+	"webapp/internal/logger"
+	appmw "webapp/internal/middleware"
+	"webapp/internal/store"
+	"webapp/internal/utils"
 )
 
 func main() {
-	e := echo.New()
-	e.Use(middleware.Logger())
+	cfg := config.Load()
 
-	tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
+	// Setup log file
+	if err := os.MkdirAll(filepath.Dir(cfg.LogFile), 0755); err != nil {
+		slog.Error("failed to create logs directory", "err", err)
+		os.Exit(1)
+	}
+	logFile, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		slog.Error("failed to open log file", "err", err)
+		os.Exit(1)
+	}
+	defer logFile.Close()
+
+	// Setup logger
+	log := logger.New(logFile, cfg.LogLevel)
+	slog.SetDefault(log)
+
+	// Initialize store
+	utils.Store = store.New()
+
+	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+
+	e.Use(appmw.RequestID())
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogStatus: true,
+		LogURI:    true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			appmw.Logger(c).Info("request", "uri", v.URI, "method", c.Request().Method, "status", v.Status)
+			return nil
+		},
+	}))
+
+	tmpl := template.Must(template.ParseGlob("web/templates/*.html"))
 	e.Renderer = &TemplateRenderer{templates: tmpl}
 
-	e.GET("/", handlers.Index)
-	e.POST("/add", handlers.Add)
+	// Routes
+	e.Static("/static", "web/static")
 
-	log.Println("Server starting on :8080")
-	e.Start(":8080")
+	e.GET("/", handlers.Index)
+	e.GET("/sse", handlers.SSE)
+	e.GET("/health", handlers.Health)
+
+	e.POST("/todo", examples.AddTodo)
+
+	// Graceful shutdown
+	go func() {
+		slog.Info("server starting", "port", cfg.Port)
+		if err := e.Start(fmt.Sprintf(":%d", cfg.Port)); err != nil {
+			slog.Info("server stopped", "err", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	slog.Info("shutting down server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := e.Shutdown(ctx); err != nil {
+		slog.Error("server forced to shutdown", "err", err)
+	}
+	slog.Info("server exited")
 }
 
 type TemplateRenderer struct {
 	templates *template.Template
 }
 
-func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *TemplateRenderer) Render(w io.Writer, name string, data any, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }

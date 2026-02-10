@@ -6,20 +6,33 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+
+	appmw "webapp/internal/middleware"
+	"webapp/internal/utils"
 )
 
 func Index(c echo.Context) error {
-	// Set client_id cookie if not exists
-	_, err := c.Cookie("client_id")
+	var clientID string
+	isNew := false
+
+	cookie, err := c.Cookie("client_id")
 	if err != nil {
-		cookie := &http.Cookie{
+		clientID = fmt.Sprintf("client_%d", time.Now().UnixNano())
+		c.SetCookie(&http.Cookie{
 			Name:     "client_id",
-			Value:    fmt.Sprintf("client_%d", time.Now().UnixNano()),
+			Value:    clientID,
 			Path:     "/",
 			HttpOnly: true,
 			MaxAge:   86400,
-		}
-		c.SetCookie(cookie)
+		})
+		isNew = true
+	} else {
+		clientID = cookie.Value
 	}
-	return c.Render(http.StatusOK, "index.html", nil)
+
+	log := appmw.Logger(c)
+	data := utils.Store.GetTodos()
+
+	log.Debug("index: rendering", "todo_count", len(data), "new_client", isNew)
+	return c.Render(http.StatusOK, "index", data)
 }
