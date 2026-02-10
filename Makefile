@@ -1,4 +1,4 @@
-.PHONY: dev build run test clean fmt vet lint
+.PHONY: dev build run test clean fmt vet lint docker docker-run
 
 # Development with hot reload
 dev:
@@ -34,3 +34,11 @@ lint:
 
 # All checks
 check: fmt vet test
+
+# Docker build
+docker:
+	docker build -t stargazing .
+
+# Docker run
+docker-run: docker
+	docker run -p 8080:8080 stargazing

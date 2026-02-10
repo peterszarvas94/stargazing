@@ -2,14 +2,6 @@
 
 Go + Echo + Datastar bootstrap for real-time web apps with SSE.
 
-## Features
-
-- **Echo v4** - Fast HTTP framework
-- **Datastar** - Hypermedia framework for reactive UIs via SSE
-- **slog** - Structured logging with colored terminal output + JSON file logs
-- **Air** - Hot reload for development
-- **Graceful shutdown** - Clean SIGINT/SIGTERM handling
-
 ## Quick Start
 
 ```bash
@@ -18,9 +10,6 @@ cp .env.example .env
 
 # Development with hot reload
 make dev
-
-# Or build and run
-make run
 ```
 
 Open http://localhost:8080
@@ -47,34 +36,38 @@ examples/
 
 Environment variables (see `.env.example`):
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `8080` | Server port |
-| `LOG_LEVEL` | `debug` | Log level (debug, info, warn, error) |
-| `LOG_FILE` | `logs/app.log` | JSON log file path |
+| Variable    | Default        | Description                          |
+| ----------- | -------------- | ------------------------------------ |
+| `PORT`      | `8080`         | Server port                          |
+| `LOG_LEVEL` | `debug`        | Log level (debug, info, warn, error) |
+| `LOG_FILE`  | `logs/app.log` | JSON log file path                   |
 
 ## Make Commands
 
 ```bash
-make dev      # Hot reload development
-make build    # Build binary to bin/
-make run      # Build and run
-make test     # Run tests
-make fmt      # Format code
-make vet      # Vet code
-make check    # fmt + vet + test
-make clean    # Remove build artifacts
+make dev        # Hot reload development
+make build      # Build binary to bin/
+make run        # Build and run
+make test       # Run tests
+make fmt        # Format code
+make vet        # Vet code
+make check      # fmt + vet + test
+make clean      # Remove build artifacts
+make docker     # Build docker image
+make docker-run # Build and run docker image
 ```
 
 ## Docker
 
 ```bash
-# Build and run
-docker compose up --build
+make docker-run
 
-# Or just build
+# Or manually
 docker build -t stargazing .
 docker run -p 8080:8080 stargazing
+
+# Or with docker compose
+docker compose up --build
 ```
 
 ## How It Works
